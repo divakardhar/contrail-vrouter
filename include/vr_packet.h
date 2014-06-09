@@ -88,7 +88,6 @@
 #define PKT_RET_FAST_PATH 			1
 #define PKT_RET_SLOW_PATH 			2
 #define PKT_RET_ERROR     			3
-#define PKT_RET_FALLBACK_BRIDGING 		4
 
 /*
  * Values to define the MPLS tunnel type
@@ -103,6 +102,17 @@
  */
 #define PKT_ENCAP_MPLS  0x01
 #define PKT_ENCAP_VXLAN 0x02
+
+
+/*
+ * Values to define handling of ARP packet
+ */
+#define PKT_ARP_DROP            0x00
+#define PKT_ARP_PROXY           0x01
+#define PKT_ARP_XCONNECT        0x02
+#define PKT_ARP_FLOOD           0x03
+#define PKT_ARP_TRAP_XCONNECT   0x04
+
 
 /* packet drop reasons */
 #define VP_DROP_DISCARD                     0
@@ -134,14 +144,14 @@
 #define VP_DROP_HEAD_ALLOC_FAIL             26
 #define VP_DROP_HEAD_SPACE_RESERVE_FAIL     27
 #define VP_DROP_PCOW_FAIL                   28
-/* #define VP_DROP_FLOOD                    29 - UNUSED */
+#define VP_DROP_FLOOD                       29
 #define VP_DROP_MCAST_CLONE_FAIL            30
-/* #define VP_DROP_COMPOSITE_INVALID_INTERFACE 31 - UNUSED */
+#define VP_DROP_COMPOSITE_INVALID_INTERFACE 31
 #define VP_DROP_REWRITE_FAIL                32
 #define VP_DROP_MISC                        33
 #define VP_DROP_INVALID_PACKET              34
 #define VP_DROP_CKSUM_ERR                   35
-/* #define VP_DROP_CLONE_FAIL               36 - UNUSED */
+#define VP_DROP_CLONE_FAIL                  36
 #define VP_DROP_NO_FMD                      37
 #define VP_DROP_CLONED_ORIGINAL             38
 #define VP_DROP_INVALID_VNID                39
@@ -226,9 +236,7 @@ struct vr_packet_node {
 extern void pkt_reset(struct vr_packet *);
 extern struct vr_packet *pkt_copy(struct vr_packet *, unsigned short,
         unsigned short);
-extern int vr_trap(struct vr_packet *, unsigned short, unsigned short, void *);
 extern int vr_myip(struct vr_interface *, unsigned int);
-extern bool vr_should_proxy(struct vr_interface *, unsigned int, unsigned int);
 
 struct vr_eth {
     unsigned char eth_dmac[VR_ETHER_ALEN];
